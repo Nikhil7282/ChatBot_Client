@@ -8,3 +8,8 @@
     text-decoration: none;
     letter-spacing: 1px;
 }
+.MuiOutlinedInput-input-root.Mui-focused,
+.MuiOutlinedInput-notchedOutline
+{
+ border-color: white !important;
+}
