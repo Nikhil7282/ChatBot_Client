@@ -6,6 +6,8 @@ import NavLink from "./shared/NavLink";
 
 const Header = () => {
   const auth = useAuth();
+  console.log(auth?.isLoggedIn);
+  
   return (
     <AppBar
       sx={{ bgcolor: "transparent", position: "static", boxShadow: "none" }}

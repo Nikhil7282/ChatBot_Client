@@ -19,10 +19,8 @@ const Login = () => {
       toast.success("Welcome...",{id:"login"})
     } catch (error) {
       console.log(error);
-      
       toast.error("Signing In Failed",{id:"login"})
     }
-    
   }
   return (
     <Box width={"100%"} height={"100%"} display="flex" flex={1}>
