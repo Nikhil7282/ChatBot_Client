@@ -12,10 +12,10 @@ export const loginUser=async(email:string,password:string)=>{
 }
 
 export const checkAuthStatus=async()=>{
-    const res= await axios.post("/user/auth-status")
+    const res= await axios.get("/user/auth-status")
     console.log(res);
     
-    if(res.status!==200){
+    if(res.status!==201){
         throw new Error("Unable to authenticate")
     }
     const data=await res.data

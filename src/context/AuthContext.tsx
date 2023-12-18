@@ -27,6 +27,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     async function checkStatus() {
       const data=await checkAuthStatus()
+      console.log(data);
+      
       if(data){
         setUser({email:data.email,name:data.name})
         setIsLoggedIn(true)
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     checkStatus()
   }, []);
+
   const login = async (email: string, password: string) => {
     const data=await loginUser(email,password);
     if(data){
