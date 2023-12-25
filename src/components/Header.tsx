@@ -1,13 +1,12 @@
-import React from "react";
 import { AppBar, Toolbar } from "@mui/material";
 import Logo from "./shared/Logo";
 import { useAuth } from "../context/AuthContext";
 import NavLink from "./shared/NavLink";
+import { useRef } from "react";
 
 const Header = () => {
   const auth = useAuth();
-  console.log(auth?.isLoggedIn);
-  
+  // console.log(auth?.isLoggedIn);
   return (
     <AppBar
       sx={{ bgcolor: "transparent", position: "static", boxShadow: "none" }}

@@ -1,23 +1,49 @@
-import { Avatar, Box, Button, Typography } from "@mui/material";
-import React from "react";
+import { Avatar, Box, Button, IconButton, Typography } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { red } from "@mui/material/colors";
 import ChatItem from "../components/chat/ChatItem";
+import { IoMdSend } from "react-icons/io";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { getUserChats, sendChatRequest } from "../helpers/api-communicator";
+import toast from "react-hot-toast";
 
-let chatMessages = [
-  // Each message is an object with two properties: role and content
-  { role: "user", content: "Hello" },
-  { role: "assistant", content: "Hi, this is Bing. How can I help you?" },
-  { role: "user", content: "What is the weather today?" },
-  { role: "assistant", content: "It is sunny and warm today." },
-  // And so on
-];
 
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+};
 
 const Chat = () => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const auth = useAuth();
-  console.log(auth);
-  
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  // console.log(auth);
+
+  const handleSubmit = async () => {
+    const content = inputRef.current?.value as string;
+    if (inputRef && inputRef.current) {
+      inputRef.current.value = "";
+    }
+    const newMessage: Message = { role: "user", content };
+    setChatMessages((prev) => [...prev, newMessage]);
+    // console.log(inputRef.current?.value);
+    const chatData = await sendChatRequest(content);
+    setChatMessages([...chatData.chats]);
+  };
+
+  useLayoutEffect(()=>{
+    if(auth?.isLoggedIn && auth.user){
+      toast.loading("Loading Chats",{id:"loadchats"})
+      getUserChats().then((data)=>{
+        setChatMessages([...data.chats])
+        toast.success("Chat Loaded SuccessFully",{id:"loadchats"})
+      })
+      .catch((err)=>{
+        console.log(err);
+        toast.error("Loading Failed",{id:"loadchats"})
+      })
+    }
+  },[auth])
   return (
     <Box
       sx={{
@@ -29,7 +55,13 @@ const Chat = () => {
         gap: 3,
       }}
     >
-      <Box sx={{ display: { md: "flex", xs: "none", sm: "none" } }}>
+      <Box
+        sx={{
+          display: { md: "flex", xs: "none", sm: "none" },
+          flex: 0.2,
+          flexDirection: "column",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -52,15 +84,26 @@ const Chat = () => {
           >
             {auth?.user?.name[0]}
           </Avatar>
-          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 4, p: 3 }}>
+          <Typography sx={{ mx: "auto", fontFamily: "work sans" }}>
             You are talking to a chatbot
           </Typography>
-          <Typography>
+          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 4, p: 3 }}>
             You can ask some questions related to
             knowledge,business,advices,education,etc... But avoid sharing
             personal information
           </Typography>
-          <Button sx={{width:"200px",my:"auto",color:"white",fontWeight:"700", borderRadius:3,mx:"auto",bgcolor:red[300],"hover":{bgcolor:red.A400}}}>
+          <Button
+            sx={{
+              width: "200px",
+              my: "auto",
+              color: "white",
+              fontWeight: "700",
+              borderRadius: 3,
+              mx: "auto",
+              bgcolor: red[300],
+              ":hover": { bgcolor: red.A400 },
+            }}
+          >
             Clear Conversation
           </Button>
         </Box>
@@ -100,10 +143,11 @@ const Chat = () => {
         >
           {chatMessages.map((chat, index) => (
             // <div>{chat.content}</div>
+            //@ts-ignore
             <ChatItem content={chat.content} role={chat.role} key={index} />
           ))}
         </Box>
-        {/* <div
+        <div
           style={{
             width: "100%",
             borderRadius: 8,
@@ -129,7 +173,7 @@ const Chat = () => {
           <IconButton onClick={handleSubmit} sx={{ color: "white", mx: 1 }}>
             <IoMdSend />
           </IconButton>
-        </div> */}
+        </div>
       </Box>
     </Box>
   );

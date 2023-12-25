@@ -16,7 +16,14 @@ const Logo = () => {
           className="image-inverted"
           style={{ width: "30px", height: "30px",fontSize:"30px",textDecoration:"none"}}
         >
-          <GiCircuitry />
+          {/* <GiCircuitry /> */}
+          <img
+          src="../../../public/openai.png"
+          alt="openai"
+          width={"30px"}
+          height={"30px"}
+          className="image-inverted"
+        />
         </div>
       </Link>
       <Typography
