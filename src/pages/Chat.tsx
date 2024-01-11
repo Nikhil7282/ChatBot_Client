@@ -4,9 +4,13 @@ import { red } from "@mui/material/colors";
 import ChatItem from "../components/chat/ChatItem";
 import { IoMdSend } from "react-icons/io";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { getUserChats, sendChatRequest } from "../helpers/api-communicator";
+import {
+  deleteUserChats,
+  getUserChats,
+  sendChatRequest,
+} from "../helpers/api-communicator";
 import toast from "react-hot-toast";
-
+import { useNavigate } from "react-router-dom";
 
 type Message = {
   role: "user" | "assistant";
@@ -18,7 +22,7 @@ const Chat = () => {
   const auth = useAuth();
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   // console.log(auth);
-
+  const navigate = useNavigate();
   const handleSubmit = async () => {
     const content = inputRef.current?.value as string;
     if (inputRef && inputRef.current) {
@@ -30,20 +34,37 @@ const Chat = () => {
     const chatData = await sendChatRequest(content);
     setChatMessages([...chatData.chats]);
   };
-
-  useLayoutEffect(()=>{
-    if(auth?.isLoggedIn && auth.user){
-      toast.loading("Loading Chats",{id:"loadchats"})
-      getUserChats().then((data)=>{
-        setChatMessages([...data.chats])
-        toast.success("Chat Loaded SuccessFully",{id:"loadchats"})
-      })
-      .catch((err)=>{
-        console.log(err);
-        toast.error("Loading Failed",{id:"loadchats"})
-      })
+  const handleDeleteChats = async () => {
+    try {
+      toast.loading("Deleting Chat", { id: "delete chats" });
+      await deleteUserChats();
+      setChatMessages([]);
+      toast.success("Deleted Chat SuccessFully", { id: "delete chats" });
+    } catch (error) {
+      console.log(error);
+      toast.error("Deleting Chats Failed", { id: "delete chats" });
     }
-  },[auth])
+  };
+  useLayoutEffect(() => {
+    if (auth?.isLoggedIn && auth.user) {
+      toast.loading("Loading Chats", { id: "loadchats" });
+      getUserChats()
+        .then((data) => {
+          setChatMessages([...data.chats]);
+          toast.success("Chat Loaded SuccessFully", { id: "loadchats" });
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Loading Failed", { id: "loadchats" });
+        });
+    }
+  }, [auth]);
+
+  useEffect(() => {
+    if (!auth?.user) {
+      return navigate("/login");
+    }
+  }, [auth]);
   return (
     <Box
       sx={{
@@ -103,6 +124,7 @@ const Chat = () => {
               bgcolor: red[300],
               ":hover": { bgcolor: red.A400 },
             }}
+            onClick={handleDeleteChats}
           >
             Clear Conversation
           </Button>
