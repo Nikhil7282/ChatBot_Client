@@ -1,27 +1,35 @@
-
-import {IoIosLogIn} from "react-icons/io"
+import { IoIosLogIn } from "react-icons/io";
 import { Box, Button, Typography } from "@mui/material";
 import CustomizeInput from "../components/shared/CustomizeInput";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const auth=useAuth()
-  const handleSubmit=async (e:React.FormEvent<HTMLFormElement>)=>{
-    e.preventDefault()
-    const formData=new FormData(e.currentTarget)
-    const email=formData.get("email") as string
-    const password=formData.get("password") as string
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (auth?.user) {
+      navigate("/chat");
+    }
+  }, [auth]);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
     // console.log(email,password);
     try {
-      toast.loading("Signing In",{id:"login"})
-      await auth?.login(email,password)
-      toast.success("Welcome...",{id:"login"})
+      toast.loading("Signing In", { id: "login" });
+      await auth?.login(email, password);
+      toast.success("Welcome...", { id: "login" });
     } catch (error) {
       console.log(error);
-      toast.error("Signing In Failed",{id:"login"})
+      toast.error("Signing In Failed", { id: "login" });
     }
-  }
+  };
   return (
     <Box width={"100%"} height={"100%"} display="flex" flex={1}>
       <Box padding={1} display={{ md: "flex", sm: "none", xs: "none" }}>
@@ -41,7 +49,7 @@ const Login = () => {
         mt={2}
       >
         <form
-        onSubmit={handleSubmit}
+          onSubmit={handleSubmit}
           style={{
             margin: "auto",
             padding: "30px",
@@ -81,7 +89,7 @@ const Login = () => {
                   color: "black",
                 },
               }}
-              endIcon={<IoIosLogIn/>}
+              endIcon={<IoIosLogIn />}
             >
               Login
             </Button>

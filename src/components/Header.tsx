@@ -2,10 +2,10 @@ import { AppBar, Toolbar } from "@mui/material";
 import Logo from "./shared/Logo";
 import { useAuth } from "../context/AuthContext";
 import NavLink from "./shared/NavLink";
-import { useRef } from "react";
 
 const Header = () => {
   const auth = useAuth();
+
   // console.log(auth?.isLoggedIn);
   return (
     <AppBar
@@ -27,12 +27,12 @@ const Header = () => {
                 to="/"
                 text="logout"
                 textColor="white"
-                onClick={auth.logout}
+                onClick={auth?.logout}
               />
             </>
           ) : (
             <>
-            <NavLink
+              <NavLink
                 bg="#00fffc"
                 to="/login"
                 text="Login"
